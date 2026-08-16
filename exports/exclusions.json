@@ -1,0 +1,181 @@
+{
+  "input_traces": 308,
+  "input_sessions": 150,
+  "sft": {
+    "written": 133,
+    "excluded": {
+      "total_excluded": 175,
+      "by_reason": [
+        {
+          "reason": "shorter duplicate of another trace in the same session",
+          "count": 63,
+          "sample_ids": [
+            "19c90dab5e74",
+            "e75bf9977b76",
+            "34dc8dac27f6",
+            "91b6ac62e7d1",
+            "c5bf6562c888",
+            "9f93883f3cd3",
+            "4ef463ff8d5e",
+            "55dae1d79e92",
+            "f9372652816e",
+            "52fbd61d2f77"
+          ]
+        },
+        {
+          "reason": "superseded by a retry of the same prompt",
+          "count": 44,
+          "sample_ids": [
+            "848051c40fc1",
+            "399d90485044",
+            "1c1ed9277436",
+            "7b01b1ab2e3f",
+            "82f46c475c1d",
+            "d55ffff2c0aa",
+            "de14ff7f509c",
+            "d8f457aaae88",
+            "12d672a935ac",
+            "1cdd5efc1f50"
+          ]
+        },
+        {
+          "reason": "truncated, hit the token ceiling",
+          "count": 23,
+          "sample_ids": [
+            "d8a959dfbdba",
+            "4362b1ecb410",
+            "ab785de998e2",
+            "df5861247c08",
+            "2f58ae40e1be",
+            "bf924f9d8ca9",
+            "098cc975cbbe",
+            "4ddd037e584d",
+            "601e8d8ded6c",
+            "1cf6b7aba580"
+          ]
+        },
+        {
+          "reason": "client rejected the continuation",
+          "count": 15,
+          "sample_ids": [
+            "b4e3510ca403",
+            "5c33eaefc716",
+            "8407f9621e95",
+            "5b33e02324f2",
+            "4e4a6d2c7ae1",
+            "a33d5c95ac61",
+            "e1b4a90ebca2",
+            "ed9344563a7b",
+            "a55f12cca7ec",
+            "87b2bdcc81f9"
+          ]
+        },
+        {
+          "reason": "a tool call failed during the turn",
+          "count": 14,
+          "sample_ids": [
+            "e1a638c94bde",
+            "74c896337446",
+            "2ef2d6b9e344",
+            "9e590b9f33f3",
+            "e26b428251d7",
+            "db7dd6b6e9be",
+            "16c8566320fb",
+            "10e4ff4bfaa8",
+            "83ffa25d21f1",
+            "299423b87b27"
+          ]
+        },
+        {
+          "reason": "non-2xx response from upstream",
+          "count": 10,
+          "sample_ids": [
+            "2c6e97bfafe5",
+            "f5fc91731ff7",
+            "72399f860f5e",
+            "201c12c72af3",
+            "364217752dfd",
+            "3e12ebc4e129",
+            "34daa7f23697",
+            "bb564a13bf3c",
+            "625a6e0ad526",
+            "4f573c587984"
+          ]
+        },
+        {
+          "reason": "explicitly rated weak",
+          "count": 6,
+          "sample_ids": [
+            "f1d6e590743a",
+            "7b8b19f60949",
+            "62fcc7a579ae",
+            "7028925136ae",
+            "45da2f0e10ba",
+            "09e63ba6eb09"
+          ]
+        }
+      ]
+    }
+  },
+  "preference": {
+    "written": 41,
+    "by_signal": {
+      "retry": 35,
+      "continuation": 2,
+      "feedback": 4
+    },
+    "excluded": {
+      "total_excluded": 50,
+      "by_reason": [
+        {
+          "reason": "retry returned the same text, no preference to learn",
+          "count": 25,
+          "sample_ids": [
+            "b4e3510ca403",
+            "e75bf9977b76",
+            "9ad6f115afa3",
+            "c60715eca92b",
+            "84e29c61876a",
+            "196b6422807e",
+            "42340c8fbefb",
+            "693d8ef93e07",
+            "09923eea24a2",
+            "e1b4a90ebca2"
+          ]
+        },
+        {
+          "reason": "no counterpart answer to pair it against",
+          "count": 15,
+          "sample_ids": [
+            "2f58ae40e1be",
+            "f1d6e590743a",
+            "62fcc7a579ae",
+            "09e63ba6eb09",
+            "b68f9c3cacb1",
+            "5c33eaefc716",
+            "8407f9621e95",
+            "4e4a6d2c7ae1",
+            "601e8d8ded6c",
+            "87b2bdcc81f9"
+          ]
+        },
+        {
+          "reason": "non-2xx response from upstream",
+          "count": 10,
+          "sample_ids": [
+            "2c6e97bfafe5",
+            "f5fc91731ff7",
+            "72399f860f5e",
+            "201c12c72af3",
+            "364217752dfd",
+            "3e12ebc4e129",
+            "34daa7f23697",
+            "bb564a13bf3c",
+            "625a6e0ad526",
+            "4f573c587984"
+          ]
+        }
+      ]
+    }
+  }
+}
