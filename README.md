@@ -8,16 +8,17 @@ is synthetic but shaped like the real thing.
 
 ```bash
 pip install -r requirements.txt
-python generate_corpus.py --sessions 150     # writes data/traces.jsonl
-python -m app.main                           # http://127.0.0.1:8000
+python generate_corpus.py --sessions 150   # writes data/traces.jsonl
+python manage.py ingest                    # jsonl -> sqlite
+python manage.py serve                     # http://127.0.0.1:8000
 ```
 
-Exports are built from the Exports tab, or directly:
+Exports come from the Exports tab, or the CLI:
 
 ```bash
-python -c "from pathlib import Path; from app import store, exports; \
-c=store.connect(); store.ingest(c, store.read_jsonl(Path('data/traces.jsonl'))); \
-print(exports.write_all(store.all_traces(c)))"
+python manage.py export     # writes sft.jsonl, preference.jsonl, exclusions.json
+python manage.py stats      # per-model cost, latency, truncation, feedback
+python -m pytest -q         # 20 tests over the filtering rules
 ```
 
 ## What it does
@@ -105,10 +106,25 @@ of the loss is structural rather than quality: the duplicate rule alone accounts
 for 63 rows, because sessions with five turns contribute one conversation, not
 five.
 
+## Tests
+
+```
+python -m pytest -q     # 20 passing
+```
+
+The UI is easy to eyeball. The exports are not: a wrong rule here ships bad
+training data silently, and nothing downstream complains until a model gets
+worse. So every exclusion rule has a test that builds the exact trace it is meant
+to catch, and the rules with real logic behind them are tested for behaviour
+rather than mechanism. The last test asserts the property the whole exclusion
+report exists to guarantee: every input trace is either exported or explained,
+never quietly dropped.
+
 ## Layout
 
 ```
 generate_corpus.py     synthetic traffic, seeded
+manage.py              ingest / export / stats / serve
 app/schema.py          what a trace is, and how to read one
 app/scenarios.py       corpus content, grouped so answers match questions
 app/store.py           SQLite ingest and queries
@@ -116,6 +132,7 @@ app/exports.py         SFT, preference, exclusion accounting
 app/main.py            FastAPI routes
 app/templates/         server-rendered pages
 app/static/app.css     the design
+tests/test_exports.py  the filtering rules
 ```
 
 ## Choices
