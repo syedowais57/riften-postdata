@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% set nav = "exports" %}
+{% block title %}Exports{% endblock %}
+
+{% block body %}
+
+<h2 style="margin-top:22px">Exports</h2>
+<p class="note">
+  Two files come out of the corpus. SFT keeps one conversation per session, the
+  longest surviving one, because the client replays the whole transcript each turn
+  and exporting every trace would emit the same conversation several times over.
+  Preference pairs are built from three signals, listed below in the order they
+  are trusted. Everything dropped along the way is counted against a reason.
+</p>
+
+<form method="post" action="/exports/run" style="margin:14px 0 24px">
+  <button class="btn" type="submit">Rebuild exports</button>
+  {% if report %}
+    <a class="btn ghost" href="/exports/sft.jsonl">sft.jsonl</a>
+    <a class="btn ghost" href="/exports/preference.jsonl">preference.jsonl</a>
+    <a class="btn ghost" href="/exports/exclusions.json">exclusions.json</a>
+  {% endif %}
+</form>
+
+{% if not report %}
+  <div class="panel"><div class="empty">No exports built yet. Run them above.</div></div>
+{% else %}
+
+  {% set inp = report.input_traces %}
+  <div class="stats">
+    <div class="stat"><div class="k">Input traces</div><div class="v">{{ "{:,}".format(inp) }}</div></div>
+    <div class="stat"><div class="k">Input sessions</div><div class="v">{{ "{:,}".format(report.input_sessions) }}</div></div>
+    <div class="stat"><div class="k">SFT rows</div><div class="v">{{ "{:,}".format(report.sft.written) }}</div></div>
+    <div class="stat"><div class="k">Preference pairs</div><div class="v">{{ "{:,}".format(report.preference.written) }}</div></div>
+    <div class="stat"><div class="k">Excluded from SFT</div>
+      <div class="v warn">{{ "{:,}".format(report.sft.excluded.total_excluded) }}</div></div>
+  </div>
+
+  <h2>What was excluded from SFT <span class="muted">and why</span></h2>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Reason</th><th class="num">Traces</th><th style="width:230px">Share</th>
+                 <th>Sample ids</th></tr></thead>
+      <tbody>
+      {% set tot = report.sft.excluded.total_excluded or 1 %}
+      {% for row in report.sft.excluded.by_reason %}
+        <tr>
+          <td>{{ row.reason }}</td>
+          <td class="num">{{ row.count }}</td>
+          <td>
+            <div class="bar"><i style="width: {{ (row.count / tot * 100) | round(1) }}%"></i></div>
+            <span style="font-size:11px;color:var(--ink-3);font-family:var(--mono)">
+              {{ (row.count / tot * 100) | round(1) }}%</span>
+          </td>
+          <td class="id">{{ row.sample_ids[:5] | join(" ") }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Preference pairs by signal</h2>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Signal</th><th class="num">Pairs</th><th>What it means</th></tr></thead>
+      <tbody>
+      {% set meanings = {
+        "retry": "The client re-ran the same prompt and kept the second answer. Strongest signal available.",
+        "feedback": "A turn rated weak, paired against a strong or ok turn in the same session.",
+        "continuation": "The client refused to continue from the answer. Weakest of the three, used last."
+      } %}
+      {% for sig, n in report.preference.by_signal.items() %}
+        <tr>
+          <td><span class="tag">{{ sig }}</span></td>
+          <td class="num">{{ n }}</td>
+          <td class="note" style="padding-top:8px">{{ meanings.get(sig, "") }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if report.preference.excluded.by_reason %}
+    <h2>Preference candidates that could not be paired</h2>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Reason</th><th class="num">Traces</th><th>Sample ids</th></tr></thead>
+        <tbody>
+        {% for row in report.preference.excluded.by_reason %}
+          <tr><td>{{ row.reason }}</td><td class="num">{{ row.count }}</td>
+              <td class="id">{{ row.sample_ids[:5] | join(" ") }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+
+{% endif %}
+{% endblock %}

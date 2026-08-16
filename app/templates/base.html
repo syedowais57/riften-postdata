@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Traces{% endblock %} · Riften post-training</title>
+<link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">Riften <span>post-training data</span></div>
+    <nav>
+      <a href="/" class="{{ 'on' if nav == 'traces' else '' }}">Traces</a>
+      <a href="/exports" class="{{ 'on' if nav == 'exports' else '' }}">Exports</a>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+{% block body %}{% endblock %}
+</div>
+</body>
+</html>

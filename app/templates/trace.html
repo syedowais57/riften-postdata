@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% set nav = "traces" %}
+{% block title %}{{ t.id }}{% endblock %}
+
+{% block body %}
+
+<h2 style="margin-top:20px">
+  <a href="/">Traces</a> <span class="muted">/</span>
+  <span style="font-family:var(--mono)">{{ t.id }}</span>
+  <span class="muted">· session</span>
+  <a href="/?session={{ t.session_id }}" style="font-family:var(--mono)">{{ t.session_id }}</a>
+</h2>
+
+<div class="cols">
+
+  <div>
+    <div class="panel">
+      <div class="section-head">Transcript as the client sent it</div>
+      {% for m in t.messages %}
+        <div class="msg-block {{ m.role }}">
+          <div class="role">{{ m.role }}</div>
+          <pre>{{ m.content }}</pre>
+        </div>
+      {% endfor %}
+      <div class="msg-block assistant">
+        <div class="role">assistant · this response</div>
+        {% if t.response %}
+          <pre>{{ t.response }}</pre>
+          {% if t.truncated %}
+            <p class="note" style="margin:8px 0 0;color:var(--warn)">
+              Cut off at the token ceiling. Excluded from SFT.</p>
+          {% endif %}
+        {% else %}
+          <p class="note" style="margin:0;color:var(--bad)">
+            No response body. Upstream returned {{ t.status }}.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if t.tool_calls %}
+      <h2>Tool calls</h2>
+      <div class="panel">
+        <table>
+          <thead><tr><th>Tool</th><th>Arguments</th><th>Result</th></tr></thead>
+          <tbody>
+          {% for c in t.tool_calls %}
+            <tr>
+              <td class="model">{{ c.name }}</td>
+              <td class="id">{{ c.arguments | tojson }}</td>
+              <td>{% if c.ok %}<span class="tag good">ok</span>
+                  {% else %}<span class="tag bad">{{ c.error }}</span>{% endif %}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+    {% if siblings | length > 1 %}
+      <h2>Rest of the session <span class="muted">{{ siblings | length }} traces</span></h2>
+      <div class="panel">
+        <table>
+          <thead><tr><th>Trace</th><th>Model</th><th class="num">Turns</th>
+                     <th>Finish</th><th>Signals</th></tr></thead>
+          <tbody>
+          {% for s in siblings %}
+            <tr {% if s.id == t.id %}style="background:color-mix(in srgb,var(--accent) 7%,transparent)"{% endif %}>
+              <td class="id"><a href="/trace/{{ s.id }}">{{ s.id }}</a></td>
+              <td class="model">{{ s.model }}</td>
+              <td class="num">{{ s.turn_count }}</td>
+              <td><span class="tag {{ 'bad' if s.finish_reason in ('error',) else ('warn' if s.finish_reason == 'length' else '') }}">{{ s.finish_reason }}</span></td>
+              <td>
+                <div class="tags">
+                  {% if s.retry_of %}<span class="tag">retry of {{ s.retry_of[:6] }}</span>{% endif %}
+                  {% if s.feedback %}<span class="tag {{ 'good' if s.feedback=='strong' else ('bad' if s.feedback=='weak' else '') }}">{{ s.feedback }}</span>{% endif %}
+                  {% if s.continuation %}<span class="tag {{ 'good' if s.continuation=='accepted' else 'bad' }}">{{ s.continuation }}</span>{% endif %}
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <div class="section-head">Trace</div>
+    <table class="kv">
+      <tr><td>Model</td><td>{{ t.model }}</td></tr>
+      <tr><td>Timestamp</td><td>{{ t.ts[:19] | replace("T", " ") }}</td></tr>
+      <tr><td>Status</td><td {% if t.failed %}style="color:var(--bad)"{% endif %}>{{ t.status }}</td></tr>
+      <tr><td>Finish reason</td><td>{{ t.finish_reason }}</td></tr>
+      <tr><td>Prompt tokens</td><td>{{ "{:,}".format(t.prompt_tokens) }}</td></tr>
+      <tr><td>Completion tokens</td><td>{{ "{:,}".format(t.completion_tokens) }}</td></tr>
+      <tr><td>Cost</td><td>${{ "%.5f" % t.cost_usd }}</td></tr>
+      <tr><td>Latency</td><td>{{ "{:,}".format(t.latency_ms) }} ms</td></tr>
+      <tr><td>Turns in transcript</td><td>{{ t.turn_count }}</td></tr>
+      <tr><td>Feedback</td><td>{{ t.feedback or "none" }}</td></tr>
+      <tr><td>Continuation</td><td>{{ t.continuation or "none" }}</td></tr>
+      <tr><td>Retry of</td>
+          <td>{% if t.retry_of %}<a href="/trace/{{ t.retry_of }}">{{ t.retry_of }}</a>
+              {% else %}none{% endif %}</td></tr>
+    </table>
+
+    <div class="section-head" style="border-top:1px solid var(--line)">System prompt</div>
+    <div class="msg-block"><pre style="font-size:12px;color:var(--ink-2)">{{ t.system_prompt }}</pre></div>
+  </div>
+
+</div>
+{% endblock %}

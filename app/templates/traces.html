@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% set nav = "traces" %}
+{% block title %}Traces{% endblock %}
+
+{% block body %}
+
+{% set s = summary %}
+<div class="stats">
+  <div class="stat"><div class="k">Traces</div><div class="v">{{ "{:,}".format(s.n) }}</div></div>
+  <div class="stat"><div class="k">Sessions</div><div class="v">{{ "{:,}".format(s.sessions) }}</div></div>
+  <div class="stat"><div class="k">Cost</div><div class="v">${{ s.cost | fmt(2) }}</div></div>
+  <div class="stat"><div class="k">Tokens</div><div class="v">{{ "{:,}".format(s.tokens) }}</div></div>
+  <div class="stat"><div class="k">Avg latency</div><div class="v">{{ s.latency | fmt(0) }} ms</div></div>
+  <div class="stat"><div class="k">Truncated</div><div class="v {{ 'warn' if s.truncated else '' }}">{{ s.truncated }}</div></div>
+  <div class="stat"><div class="k">Errors</div><div class="v {{ 'bad' if s.failed else '' }}">{{ s.failed }}</div></div>
+  <div class="stat"><div class="k">Tool errors</div><div class="v {{ 'warn' if s.tool_errors else '' }}">{{ s.tool_errors }}</div></div>
+</div>
+
+<form class="filters" method="get" id="f">
+  <select name="model" onchange="f.submit()">
+    <option value="">All models</option>
+    {% for m in models %}
+      <option value="{{ m }}" {{ 'selected' if params.model == m }}>{{ m }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="feedback" onchange="f.submit()">
+    <option value="">Any feedback</option>
+    {% for v in ["strong", "ok", "weak"] %}
+      <option value="{{ v }}" {{ 'selected' if params.feedback == v }}>{{ v }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="finish" onchange="f.submit()">
+    <option value="">Any finish</option>
+    {% for v in ["stop", "length", "tool_calls", "error"] %}
+      <option value="{{ v }}" {{ 'selected' if params.finish == v }}>{{ v }}</option>
+    {% endfor %}
+  </select>
+
+  <div class="toggles">
+    {% for key, label in [("truncated","Truncated"), ("errors","Errors"),
+                          ("tool_errors","Tool errors"), ("retries","Retries")] %}
+      {% set on = params.get(key) in ("1","true","on") %}
+      <label class="toggle {{ 'on' if on }}">
+        <input type="checkbox" name="{{ key }}" value="1" {{ 'checked' if on }}
+               onchange="f.submit()" hidden>{{ label }}
+      </label>
+    {% endfor %}
+  </div>
+
+  <input type="search" name="q" value="{{ params.q or '' }}" placeholder="Search text">
+  <input type="number" name="min_cost" value="{{ params.min_cost or '' }}"
+         step="0.001" min="0" placeholder="min $" style="width:88px">
+  <input type="number" name="min_latency" value="{{ params.min_latency or '' }}"
+         step="100" min="0" placeholder="min ms" style="width:88px">
+
+  <div class="right">
+    <select name="sort" onchange="f.submit()">
+      {% for v, label in [("ts","Newest"), ("cost","Cost"), ("latency","Latency"),
+                          ("tokens","Tokens"), ("turns","Turns")] %}
+        <option value="{{ v }}" {{ 'selected' if params.sort == v }}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button class="btn ghost" type="submit">Apply</button>
+    {% if params %}<a class="clear" href="/">Reset</a>{% endif %}
+  </div>
+</form>
+
+<div class="panel">
+<table>
+<thead>
+  <tr>
+    <th>Trace</th>
+    <th>Model</th>
+    <th>Last user turn</th>
+    <th>Signals</th>
+    <th class="num">Turns</th>
+    <th class="num">Tokens</th>
+    <th class="num">Cost</th>
+    <th class="num">Latency</th>
+  </tr>
+</thead>
+<tbody>
+{% for r in rows %}
+  {% set msgs = r.messages | fromjson %}
+  {% set last_user = (msgs | selectattr("role","equalto","user") | list | last) %}
+  <tr>
+    <td class="id"><a href="/trace/{{ r.id }}">{{ r.id }}</a><br>
+        <span style="color:var(--ink-3)">{{ r.ts[5:16] | replace("T"," ") }}</span></td>
+    <td class="model">{{ r.model }}</td>
+    <td class="msg">
+      <span class="u">{{ (last_user.content if last_user else "") | shorten(84) }}</span>
+      {% if r.response %}<br>{{ r.response | shorten(96) }}{% endif %}
+    </td>
+    <td>
+      <div class="tags">
+        {% if r.failed %}<span class="tag bad">{{ r.status }}</span>{% endif %}
+        {% if r.truncated %}<span class="tag warn">truncated</span>{% endif %}
+        {% if r.tool_error %}<span class="tag warn">tool error</span>{% endif %}
+        {% if r.retry_of %}<span class="tag">retry</span>{% endif %}
+        {% if r.feedback == "strong" %}<span class="tag good">strong</span>
+        {% elif r.feedback == "weak" %}<span class="tag bad">weak</span>
+        {% elif r.feedback %}<span class="tag">{{ r.feedback }}</span>{% endif %}
+        {% if r.continuation == "rejected" %}<span class="tag bad">rejected</span>
+        {% elif r.continuation == "accepted" %}<span class="tag good">accepted</span>{% endif %}
+      </div>
+    </td>
+    <td class="num">{{ r.turn_count }}</td>
+    <td class="num">{{ "{:,}".format(r.total_tokens) }}</td>
+    <td class="num">${{ "%.4f" % r.cost_usd }}</td>
+    <td class="num">{{ "{:,}".format(r.latency_ms) }}</td>
+  </tr>
+{% else %}
+  <tr><td colspan="8" class="empty">Nothing matches those filters.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+{% if pages > 1 %}
+<div class="pager">
+  <span>Page {{ page }} of {{ pages }}</span>
+  {% if page > 1 %}<a href="?{{ qs }}&page={{ page - 1 }}">Previous</a>{% endif %}
+  {% if page < pages %}<a href="?{{ qs }}&page={{ page + 1 }}">Next</a>{% endif %}
+</div>
+{% endif %}
+
+<h2>Per model <span class="muted">whole corpus, ignoring filters</span></h2>
+<div class="panel">
+<table>
+<thead><tr>
+  <th>Model</th><th class="num">Traces</th><th class="num">Cost</th>
+  <th class="num">Avg latency</th><th class="num">Truncated</th>
+  <th class="num">Errors</th><th class="num">Strong</th><th class="num">Weak</th>
+</tr></thead>
+<tbody>
+{% for m in by_model %}
+  <tr>
+    <td class="model"><a href="/?model={{ m.model }}">{{ m.model }}</a></td>
+    <td class="num">{{ m.n }}</td>
+    <td class="num">${{ m.cost | fmt(2) }}</td>
+    <td class="num">{{ m.latency | fmt(0) }} ms</td>
+    <td class="num">{{ m.truncated }}</td>
+    <td class="num">{{ m.failed }}</td>
+    <td class="num">{{ m.strong }}</td>
+    <td class="num">{{ m.weak }}</td>
+  </tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+{% endblock %}
