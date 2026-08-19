@@ -117,14 +117,19 @@ nav a.on { color: var(--ink); font-weight: 550; }
 
 /* ---- table ---- */
 
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+/* No overflow here. It would make the panel the scroll container for the
+   sticky header, which then sticks 52px down from the panel's own top edge
+   and lands on the first row. The header has to stick to the page. */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
 
-table { width: 100%; border-collapse: collapse; }
+/* separate, not collapse: collapsed borders stop a sticky thead from
+   painting its own background in Chrome. */
+table { width: 100%; border-collapse: separate; border-spacing: 0; }
 thead th {
   text-align: left; font: 550 11px/1 var(--sans); letter-spacing: .05em;
   text-transform: uppercase; color: var(--ink-3);
   padding: 9px 12px; border-bottom: 1px solid var(--line);
-  background: var(--panel); position: sticky; top: 52px;
+  background: var(--panel); position: sticky; top: 52px; z-index: 5;
 }
 tbody td { padding: 8px 12px; border-bottom: 1px solid var(--line-2); vertical-align: top; }
 tbody tr:last-child td { border-bottom: 0; }

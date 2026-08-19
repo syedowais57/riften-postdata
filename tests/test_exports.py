@@ -219,3 +219,26 @@ def test_every_input_trace_is_either_exported_or_explained():
     ]
     rows, ex = build_sft(traces)
     assert len(rows) + ex.total == len(traces)
+
+
+def test_no_two_assistant_turns_in_a_row():
+    """A transcript alternates speakers.
+
+    The generator used to append a retry's answer on top of the answer it
+    replaced, which produced two assistant messages back to back and shipped that
+    shape into the SFT export. Nothing downstream complains about it, which is
+    exactly why it needs a test.
+    """
+    import json
+    from pathlib import Path
+
+    src = Path("data/traces.jsonl")
+    if not src.exists():
+        return
+    for line in src.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        messages = json.loads(line)["messages"]
+        for earlier, later in zip(messages, messages[1:]):
+            assert not (earlier["role"] == later["role"] == "assistant"), (
+                "two assistant turns in a row")

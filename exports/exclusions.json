@@ -10,108 +10,108 @@
           "reason": "shorter duplicate of another trace in the same session",
           "count": 63,
           "sample_ids": [
-            "19c90dab5e74",
-            "e75bf9977b76",
-            "34dc8dac27f6",
-            "91b6ac62e7d1",
-            "c5bf6562c888",
-            "9f93883f3cd3",
-            "4ef463ff8d5e",
-            "55dae1d79e92",
-            "f9372652816e",
-            "52fbd61d2f77"
+            "ee938a2f6075",
+            "b4823dc7e591",
+            "8c06947838fd",
+            "9b54c4331c53",
+            "85f8c5d0ea22",
+            "5cfd6ca1a523",
+            "d313bc7e63ac",
+            "78fbb55f4d1f",
+            "11b4a59eef55",
+            "06a7a57cc993"
           ]
         },
         {
           "reason": "superseded by a retry of the same prompt",
           "count": 44,
           "sample_ids": [
-            "848051c40fc1",
-            "399d90485044",
-            "1c1ed9277436",
-            "7b01b1ab2e3f",
-            "82f46c475c1d",
-            "d55ffff2c0aa",
-            "de14ff7f509c",
-            "d8f457aaae88",
-            "12d672a935ac",
-            "1cdd5efc1f50"
+            "4ced14cb430a",
+            "46f5181faae3",
+            "5b2bf5233f56",
+            "104bbba36de1",
+            "856108fe92d5",
+            "66fcd75f6d61",
+            "e1a98cf9eb63",
+            "f8befcca357b",
+            "89f84402f405",
+            "3c7856af1ee6"
           ]
         },
         {
           "reason": "truncated, hit the token ceiling",
           "count": 23,
           "sample_ids": [
-            "d8a959dfbdba",
-            "4362b1ecb410",
-            "ab785de998e2",
-            "df5861247c08",
-            "2f58ae40e1be",
-            "bf924f9d8ca9",
-            "098cc975cbbe",
-            "4ddd037e584d",
-            "601e8d8ded6c",
-            "1cf6b7aba580"
+            "df586de03e33",
+            "55f9433a25ab",
+            "f92aa0c1f0fb",
+            "f70126542a73",
+            "fd3cf5196d9e",
+            "887b56069eb6",
+            "f3776f8e8fdd",
+            "58dbde0d429a",
+            "9736b9efbc91",
+            "296aad6e7e81"
           ]
         },
         {
           "reason": "client rejected the continuation",
           "count": 15,
           "sample_ids": [
-            "b4e3510ca403",
-            "5c33eaefc716",
-            "8407f9621e95",
-            "5b33e02324f2",
-            "4e4a6d2c7ae1",
-            "a33d5c95ac61",
-            "e1b4a90ebca2",
-            "ed9344563a7b",
-            "a55f12cca7ec",
-            "87b2bdcc81f9"
+            "a75133ec7d8c",
+            "46b19ccc490f",
+            "276500d9ed43",
+            "8765b89de2ab",
+            "5ef38d6444a3",
+            "f56e1709af44",
+            "9839624fb8d5",
+            "ad2cbefe2393",
+            "7a6a3b2d9052",
+            "f5f2d5403fb1"
           ]
         },
         {
           "reason": "a tool call failed during the turn",
           "count": 14,
           "sample_ids": [
-            "e1a638c94bde",
-            "74c896337446",
-            "2ef2d6b9e344",
-            "9e590b9f33f3",
-            "e26b428251d7",
-            "db7dd6b6e9be",
-            "16c8566320fb",
-            "10e4ff4bfaa8",
-            "83ffa25d21f1",
-            "299423b87b27"
+            "28191b3d1e46",
+            "7dabbc8baff4",
+            "9a4abd18ba88",
+            "6c33b5f70507",
+            "558e20120e80",
+            "1970f99cc16a",
+            "b2154b80fce1",
+            "84506603d8cd",
+            "555fdcfb056f",
+            "095177158386"
           ]
         },
         {
           "reason": "non-2xx response from upstream",
           "count": 10,
           "sample_ids": [
-            "2c6e97bfafe5",
-            "f5fc91731ff7",
-            "72399f860f5e",
-            "201c12c72af3",
-            "364217752dfd",
-            "3e12ebc4e129",
-            "34daa7f23697",
-            "bb564a13bf3c",
-            "625a6e0ad526",
-            "4f573c587984"
+            "b163d89dec66",
+            "fb871d66bbea",
+            "cf19b5363ed6",
+            "3b7f04ade243",
+            "dab18bc2fd9e",
+            "9e5881ee4666",
+            "876e30856e25",
+            "23a73d839c47",
+            "d663f4caebfc",
+            "5b25dea24f41"
           ]
         },
         {
           "reason": "explicitly rated weak",
           "count": 6,
           "sample_ids": [
-            "f1d6e590743a",
-            "7b8b19f60949",
-            "62fcc7a579ae",
-            "7028925136ae",
-            "45da2f0e10ba",
-            "09e63ba6eb09"
+            "f7b0cc11358c",
+            "3e70be3440a3",
+            "da03004d6714",
+            "d113a6249b02",
+            "3a403dc98948",
+            "6a1721fa7d4e"
           ]
         }
       ]
@@ -131,48 +131,48 @@
           "reason": "retry returned the same text, no preference to learn",
           "count": 25,
           "sample_ids": [
-            "b4e3510ca403",
-            "e75bf9977b76",
-            "9ad6f115afa3",
-            "c60715eca92b",
-            "84e29c61876a",
-            "196b6422807e",
-            "42340c8fbefb",
-            "693d8ef93e07",
-            "09923eea24a2",
-            "e1b4a90ebca2"
+            "a75133ec7d8c",
+            "b4823dc7e591",
+            "be5ef423a0be",
+            "178947570e14",
+            "7b820eefc826",
+            "109e6ffd1f22",
+            "505005acf6f3",
+            "03646285f4af",
+            "272cc4b8754d",
+            "9839624fb8d5"
           ]
         },
         {
           "reason": "no counterpart answer to pair it against",
           "count": 15,
           "sample_ids": [
-            "2f58ae40e1be",
-            "f1d6e590743a",
-            "62fcc7a579ae",
-            "09e63ba6eb09",
-            "b68f9c3cacb1",
-            "5c33eaefc716",
-            "8407f9621e95",
-            "4e4a6d2c7ae1",
-            "601e8d8ded6c",
-            "87b2bdcc81f9"
+            "fd3cf5196d9e",
+            "f7b0cc11358c",
+            "da03004d6714",
+            "6a1721fa7d4e",
+            "116b39bfb5b1",
+            "46b19ccc490f",
+            "276500d9ed43",
+            "5ef38d6444a3",
+            "9736b9efbc91",
+            "f5f2d5403fb1"
           ]
         },
         {
           "reason": "non-2xx response from upstream",
           "count": 10,
           "sample_ids": [
-            "2c6e97bfafe5",
-            "f5fc91731ff7",
-            "72399f860f5e",
-            "201c12c72af3",
-            "364217752dfd",
-            "3e12ebc4e129",
-            "34daa7f23697",
-            "bb564a13bf3c",
-            "625a6e0ad526",
-            "4f573c587984"
+            "b163d89dec66",
+            "fb871d66bbea",
+            "cf19b5363ed6",
+            "3b7f04ade243",
+            "dab18bc2fd9e",
+            "9e5881ee4666",
+            "876e30856e25",
+            "23a73d839c47",
+            "d663f4caebfc",
+            "5b25dea24f41"
           ]
         }
       ]

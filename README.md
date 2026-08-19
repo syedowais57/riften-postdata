@@ -18,7 +18,7 @@ Exports come from the Exports tab, or the CLI:
 ```bash
 python manage.py export     # writes sft.jsonl, preference.jsonl, exclusions.json
 python manage.py stats      # per-model cost, latency, truncation, feedback
-python -m pytest -q         # 20 tests over the filtering rules
+python -m pytest -q         # 21 tests over the filtering rules
 ```
 
 ## What it does
@@ -109,7 +109,7 @@ five.
 ## Tests
 
 ```
-python -m pytest -q     # 20 passing
+python -m pytest -q     # 21 passing
 ```
 
 The UI is easy to eyeball. The exports are not: a wrong rule here ships bad

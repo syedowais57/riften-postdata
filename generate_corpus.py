@@ -86,8 +86,15 @@ def build(rng: random.Random, n_sessions: int) -> list[dict]:
                                   sc, transcript, good, weak, force_good=True)
                 retry["retry_of"] = t["id"]
                 traces.append(retry)
-                transcript = transcript + [
-                    {"role": "assistant", "content": retry["response"]}]
+                # A retry replaces the answer the user rejected, it does not
+                # follow it. Appending both put two assistant messages back to
+                # back with no user turn between them, which is not a shape a
+                # real transcript can have, and it went into the SFT export.
+                if t["response"]:
+                    transcript = transcript[:-1]
+                if retry["response"]:
+                    transcript = transcript + [
+                        {"role": "assistant", "content": retry["response"]}]
     return traces
 
 
